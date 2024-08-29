@@ -4,7 +4,6 @@ const day = today.getDate();
 const month = today.getMonth() + 1;
 const year = today.getFullYear();
 const formattedDate = `${day}/${month}/${year}`;
-
 document.getElementById("today").textContent = formattedDate;
 
 //dropdown
@@ -36,3 +35,21 @@ dropdowns.forEach((dropdown) => {
     });
   });
 });
+
+//add value
+const inputText = document.getElementById("input-text");
+const listContainer = document.getElementById("list-container");
+const priority = document.getElementById("selected-priority");
+const subTitle = document.getElementById("list-todo");
+
+function addTask() {
+  if (inputText.value === "") {
+    alert("Isi dulu tasknya");
+  } else {
+    subTitle.style.display = "block";
+    let li = document.createElement("li");
+    li.innerHTML = `Tanggal ${formattedDate} ${inputText.value} dengan priority ${priority.innerText}`;
+    listContainer.appendChild(li);
+    inputText.value = "";
+  }
+}

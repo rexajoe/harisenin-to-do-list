@@ -9,12 +9,12 @@
   </head>
   <body>
     <div class="container">
-      <div class="list-container">
+      <div id="list-container">
         <div class="header">
           <div id="today"></div>
           <div class="profile">
-            <div id="jabatan">Front End Developer</div>
-            <div id="nama">Adam</div>
+            <div id="jabatan">Front End Dev</div>
+            <div id="nama">Rexa</div>
           </div>
         </div>
         <h3 id="h3">Task and Priority</h3>
@@ -22,7 +22,7 @@
           <input type="text" id="input-text" placeholder="Tulis task disini"/>
           <div class="dropdown">
             <div class="select">
-                <span class="selected">High</span>
+                <span class="selected" id="selected-priority">High</span>
                 <div class="caret"></div>
             </div>
             <ul class="menu">
@@ -31,8 +31,9 @@
                 <li>Low</li>
             </ul>
           </div>
-          <button id="submit">Submit</button>
+          <button id="submit" onclick="addTask()">Submit</button>
           </div>
+          <ul id="list-todo">To-Do-List</ul>
         </div>
       </div>
     </div>
