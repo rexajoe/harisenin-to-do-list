@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="shortcut icon" href="asset/pencil.png" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="list-container">
+        <div class="header">
+          <div id="today"></div>
+          <div class="profile">
+            <div id="jabatan">Front End Developer</div>
+            <div id="nama">Adam</div>
+          </div>
+        </div>
+        <h3 id="h3">Task and Priority</h3>
+        <div class="input-field">
+          <input type="text" id="input-text" placeholder="Tulis task disini"/>
+          <div class="dropdown">
+            <div class="select">
+                <span class="selected">High</span>
+                <div class="caret"></div>
+            </div>
+            <ul class="menu">
+                <li class="active">High</li>
+                <li>Medium</li>
+                <li>Low</li>
+            </ul>
+          </div>
+          <button id="submit">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
