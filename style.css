@@ -16,7 +16,7 @@ html {
 }
 
 #list-container {
-  max-width: 712px;
+  max-width: 512px;
   height: auto;
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
@@ -69,7 +69,7 @@ html {
 #submit {
   border: none;
   outline: none;
-  padding: 15px 25px;
+  padding: 3% 4%;
   background: salmon;
   cursor: pointer;
   border-radius: 50px;
@@ -80,6 +80,7 @@ html {
 
 .dropdown {
   position: relative;
+  left: 1%;
 }
 
 .dropdown * {
