@@ -74,45 +74,54 @@ function addTask() {
   if (inputText.value === "") {
     alert("Isi dulu tasknya");
   } else {
+    const taskText = inputText.value; // Simpan nilai inputText.value
+    const taskPriority = priority.innerText; // Simpan nilai priority.innerText
+
     let li = document.createElement("li");
-    li.innerHTML = `${formattedDate} ${inputText.value} dengan priority ${priority.innerText}`;
+    li.innerHTML = `${formattedDate} ${taskText} dengan priority ${taskPriority}`;
+    li.dataset.id = Date.now(); // Memberi ID unik untuk setiap task
     listTodo.appendChild(li);
-    inputText.value = "";
-  }
-  listContainer.addEventListener("click", function (e) {
-    if (e.target.tagName === "LI" && !e.target.classList.contains("done")) {
-      e.target.classList.toggle("checked");
 
-      const existingItem = Array.from(listDone.children).find(
-        (item) => item.dataset.id === e.target.dataset.id
-      );
-      if (existingItem) {
-        listDone.removeChild(existingItem);
-      } else {
-        let li = document.createElement("li");
-        li.innerHTML = `${formattedDate} ${inputText.value} dengan priority ${priority.innerText}`;
-        li.dataset.id = e.target.dataset.id;
-        li.classList.add("done");
-        listDone.appendChild(li);
+    listTodo.addEventListener("click", function (e) {
+      if (e.target.tagName === "LI") {
+        e.target.classList.toggle("checked");
 
-        const currentDate = new Date();
-        const itemDate = new Date(formattedDate);
+        const existingItem = Array.from(listDone.children).find(
+          (item) => item.dataset.id === e.target.dataset.id
+        );
 
-        if (itemDate < currentDate) {
-          listTodo.removeChild(li);
-          listOverdue.appendChild(li);
+        if (existingItem) {
+          listDone.removeChild(existingItem); // Hapus dari listDone jika sudah ada
+        } else {
+          let li = document.createElement("li");
+          li.innerHTML = `${formattedDate} ${taskText} dengan priority ${taskPriority}`;
+          li.dataset.id = e.target.dataset.id;
+          li.classList.add("done");
+          listDone.appendChild(li);
+
+          const currentDate = new Date();
+          const itemDate = new Date(formattedDate);
+
+          if (itemDate < currentDate) {
+            listTodo.removeChild(e.target); // Hapus dari listTodo
+            listOverdue.appendChild(li); // Pindahkan ke listOverdue
+          }
         }
       }
-    }
-  });
-  listDone.addEventListener("click", function (e) {
-    if (e.target.tagName === "LI") {
-      e.preventDefault();
-    }
-  });
-  listOverdue.addEventListener("click", function (e) {
-    if (e.target.tagName === "LI") {
-      e.preventDefault();
-    }
-  });
+    });
+
+    listDone.addEventListener("click", function (e) {
+      if (e.target.tagName === "LI") {
+        e.preventDefault();
+      }
+    });
+
+    listOverdue.addEventListener("click", function (e) {
+      if (e.target.tagName === "LI") {
+        e.preventDefault();
+      }
+    });
+  }
+
+  inputText.value = ""; // Kosongkan input setelah task ditambahkan
 }
