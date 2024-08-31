@@ -64,72 +64,126 @@ dropdowns.forEach((dropdown) => {
   });
 });
 
-// Add value
 const inputText = document.getElementById("input-text");
 const listTodo = document.getElementById("list-todo");
 const listDone = document.getElementById("list-done");
 const listOverdue = document.getElementById("list-overdue");
 const priority = document.getElementById("selected-priority");
 
+// Simpan data ke localStorage
+function saveToLocalStorage() {
+  const todos = Array.from(listTodo.children).map((li) => ({
+    id: li.dataset.id,
+    text: li.innerHTML,
+    date: li.dataset.date,
+    priority: li.dataset.priority,
+  }));
+
+  const dones = Array.from(listDone.children).map((li) => ({
+    id: li.dataset.id,
+    text: li.innerHTML,
+    date: li.dataset.date,
+    priority: li.dataset.priority,
+  }));
+
+  const overdues = Array.from(listOverdue.children).map((li) => ({
+    id: li.dataset.id,
+    text: li.innerHTML,
+    date: li.dataset.date,
+    priority: li.dataset.priority,
+  }));
+
+  localStorage.setItem("todos", JSON.stringify(todos));
+  localStorage.setItem("dones", JSON.stringify(dones));
+  localStorage.setItem("overdues", JSON.stringify(overdues));
+}
+
+// Muat data dari localStorage
+function loadFromLocalStorage() {
+  const todos = JSON.parse(localStorage.getItem("todos") || "[]");
+  const dones = JSON.parse(localStorage.getItem("dones") || "[]");
+  const overdues = JSON.parse(localStorage.getItem("overdues") || "[]");
+
+  todos.forEach((task) => {
+    let li = document.createElement("li");
+    li.innerHTML = task.text;
+    li.dataset.id = task.id;
+    li.dataset.date = task.date;
+    li.dataset.priority = task.priority;
+    listTodo.appendChild(li);
+    addClickListener(li);
+  });
+
+  dones.forEach((task) => {
+    let li = document.createElement("li");
+    li.innerHTML = task.text;
+    li.dataset.id = task.id;
+    li.dataset.date = task.date;
+    li.dataset.priority = task.priority;
+    li.classList.add("done");
+    listDone.appendChild(li);
+    addClickListener(li);
+  });
+
+  overdues.forEach((task) => {
+    let li = document.createElement("li");
+    li.innerHTML = task.text;
+    li.dataset.id = task.id;
+    li.dataset.date = task.date;
+    li.dataset.priority = task.priority;
+    listOverdue.appendChild(li);
+    addClickListener(li);
+  });
+}
+
+// Tambahkan event listener klik ke setiap task
+function addClickListener(li) {
+  li.addEventListener("click", function () {
+    li.classList.toggle("checked");
+
+    const existingItem = Array.from(listDone.children).find(
+      (item) => item.dataset.id === li.dataset.id
+    );
+
+    if (existingItem) {
+      listDone.removeChild(existingItem);
+    } else {
+      let doneLi = document.createElement("li");
+      doneLi.innerHTML = li.innerHTML;
+      doneLi.dataset.id = li.dataset.id;
+      doneLi.dataset.date = li.dataset.date;
+      doneLi.dataset.priority = li.dataset.priority;
+      doneLi.classList.add("done");
+      listDone.appendChild(doneLi);
+    }
+    saveToLocalStorage();
+  });
+}
+
+// Panggil fungsi loadFromLocalStorage saat halaman dimuat
+window.onload = function () {
+  loadFromLocalStorage();
+};
+
+// Panggil saveToLocalStorage() setiap kali task ditambahkan
 function addTask() {
   if (inputText.value === "") {
     alert("Isi dulu tasknya");
   } else {
     const taskText = inputText.value;
     const taskPriority = priority.innerText;
-    const taskDate = new Date(formattedDate); // Simpan tanggal dalam format Date
+    const taskDate = new Date(formattedDate);
+
     let li = document.createElement("li");
     li.innerHTML = `${formattedDate} ${taskText} dengan priority ${taskPriority}`;
     li.dataset.id = Date.now();
-    li.dataset.date = taskDate.toISOString(); // Simpan tanggal sebagai data atribut dalam format ISO string
+    li.dataset.date = taskDate.toISOString();
+    li.dataset.priority = taskPriority;
     listTodo.appendChild(li);
 
-    // Tambahkan event listener untuk memindahkan item ke Done ketika diklik
-    li.addEventListener("click", function () {
-      li.classList.toggle("checked");
+    addClickListener(li);
 
-      const existingItem = Array.from(listDone.children).find(
-        (item) => item.dataset.id === li.dataset.id
-      );
-
-      if (existingItem) {
-        listDone.removeChild(existingItem); // Hapus dari listDone jika sudah ada
-      } else {
-        let doneLi = document.createElement("li");
-        doneLi.innerHTML = li.innerHTML; // Gunakan innerHTML dari li yang diklik
-        doneLi.dataset.id = li.dataset.id;
-        doneLi.classList.add("done");
-        listDone.appendChild(doneLi);
-      }
-    });
-
-    function overdue() {
-      if (Date.now < formattedDate) {
-        let li = document.createElement("li");
-        li.innerHTML = `${formattedDate} ${taskText} dengan priority ${taskPriority}`;
-        li.dataset.id = Date.now();
-        li.dataset.date = taskDate.toISOString(); // Simpan tanggal sebagai data atribut dalam format ISO string
-        listOverdue.appendChild(li);
-
-        li.addEventListener("click", function () {
-          li.classList.toggle("checked");
-          const existingItem = Array.from(listDone.children).find(
-            (item) => item.dataset.id === li.dataset.id
-          );
-          if (existingItem) {
-            listDone.removeChild(existingItem);
-          } else {
-            let doneLi = document.createElement("li");
-            doneLi.innerHTML = li.innerHTML; // Gunakan innerHTML dari li yang diklik
-            doneLi.dataset.id = li.dataset.id;
-            doneLi.classList.add("done");
-            listDone.appendChild(doneLi);
-          }
-        });
-      }
-    }
+    inputText.value = "";
+    saveToLocalStorage();
   }
-  overdue();
-
-  inputText.value = "";
 }
