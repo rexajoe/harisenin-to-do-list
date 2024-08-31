@@ -226,4 +226,7 @@ deleteAllButton.addEventListener("click", function () {
   localStorage.removeItem("todos");
   localStorage.removeItem("dones");
   localStorage.removeItem("overdues");
+
+  // Refresh halaman
+  location.reload();
 });

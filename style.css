@@ -160,7 +160,7 @@
 #list-overdue li {
   list-style: none;
   font-size: 14px;
-  padding: 7px 8px 12px 40px;
+  padding: 7px 16px 12px 40px;
   user-select: none;
   cursor: pointer;
   position: relative;
