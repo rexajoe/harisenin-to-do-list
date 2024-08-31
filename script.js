@@ -74,9 +74,10 @@ const priority = document.getElementById("selected-priority");
 function saveToLocalStorage() {
   const todos = Array.from(listTodo.children).map((li) => ({
     id: li.dataset.id,
-    text: li.textContent,
+    text: li.textContent.replace("\u00d7", "").trim(),
     date: li.dataset.date,
     priority: li.dataset.priority,
+    checked: li.classList.contains("checked"),
   }));
 
   const dones = Array.from(listDone.children).map((li) => ({
@@ -84,13 +85,15 @@ function saveToLocalStorage() {
     text: li.textContent,
     date: li.dataset.date,
     priority: li.dataset.priority,
+    checked: li.classList.contains("checked"),
   }));
 
   const overdues = Array.from(listOverdue.children).map((li) => ({
     id: li.dataset.id,
-    text: li.textContent,
+    text: li.textContent.replace("\u00d7", "").trim(),
     date: li.dataset.date,
     priority: li.dataset.priority,
+    checked: li.classList.contains("checked"),
   }));
 
   localStorage.setItem("todos", JSON.stringify(todos));
@@ -110,8 +113,17 @@ function loadFromLocalStorage() {
     li.dataset.id = task.id;
     li.dataset.date = task.date;
     li.dataset.priority = task.priority;
+    if (task.checked) li.classList.add("checked");
+
+    // Hanya tambahkan span jika belum ada
+    if (!li.querySelector("span")) {
+      let span = document.createElement("span");
+      span.textContent = "\u00d7";
+      li.appendChild(span);
+    }
+
     listTodo.appendChild(li);
-    addClickListener(li);
+    addClickListener(li, "todo");
   });
 
   dones.forEach((task) => {
@@ -121,8 +133,10 @@ function loadFromLocalStorage() {
     li.dataset.date = task.date;
     li.dataset.priority = task.priority;
     li.classList.add("done");
+    if (task.checked) li.classList.add("checked");
+
     listDone.appendChild(li);
-    addClickListener(li);
+    addClickListener(li, "done");
   });
 
   overdues.forEach((task) => {
@@ -131,13 +145,22 @@ function loadFromLocalStorage() {
     li.dataset.id = task.id;
     li.dataset.date = task.date;
     li.dataset.priority = task.priority;
+    if (task.checked) li.classList.add("checked");
+
+    // Hanya tambahkan span jika belum ada
+    if (!li.querySelector("span")) {
+      let span = document.createElement("span");
+      span.textContent = "\u00d7";
+      li.appendChild(span);
+    }
+
     listOverdue.appendChild(li);
-    addClickListener(li);
+    addClickListener(li, "overdue");
   });
 }
 
 // Tambahkan event listener klik ke setiap task
-function addClickListener(li) {
+function addClickListener(li, listType) {
   // Event listener untuk span
   const span = li.querySelector("span");
   if (span) {
@@ -148,38 +171,39 @@ function addClickListener(li) {
     });
   }
 
-  // Event listener untuk li
-  li.addEventListener("click", function (event) {
-    // Jangan lakukan apa-apa jika klik pada span
-    if (event.target.tagName === "SPAN") return;
+  // Event listener untuk li, hanya untuk list To-Do dan Overdue
+  if (listType === "todo" || listType === "overdue") {
+    li.addEventListener("click", function (event) {
+      // Jangan lakukan apa-apa jika klik pada span
+      if (event.target.tagName === "SPAN") return;
 
-    li.classList.toggle("checked");
+      li.classList.toggle("checked");
 
-    const existingItem = Array.from(listDone.children).find(
-      (item) => item.dataset.id === li.dataset.id
-    );
+      const existingItem = Array.from(listDone.children).find(
+        (item) => item.dataset.id === li.dataset.id
+      );
 
-    if (existingItem) {
-      listDone.removeChild(existingItem);
-    } else {
-      let doneLi = document.createElement("li");
+      if (existingItem) {
+        listDone.removeChild(existingItem);
+      } else {
+        let doneLi = document.createElement("li");
 
-      // Ambil teks konten li tanpa elemen span
-      // Hapus elemen span dari li
-      const textContent = li.cloneNode(true); // Clone li untuk menghindari perubahan langsung
-      const span = textContent.querySelector("span");
-      if (span) span.remove(); // Hapus span dari clone
+        // Ambil teks konten li tanpa elemen span
+        const textContent = li.cloneNode(true); // Clone li untuk menghindari perubahan langsung
+        const span = textContent.querySelector("span");
+        if (span) span.remove(); // Hapus span dari clone
 
-      doneLi.textContent = `${textContent.textContent.trim()}`;
-      doneLi.dataset.id = li.dataset.id;
-      doneLi.dataset.date = li.dataset.date;
-      doneLi.dataset.priority = li.dataset.priority;
-      doneLi.classList.add("done");
+        doneLi.textContent = `${textContent.textContent.trim()}`;
+        doneLi.dataset.id = li.dataset.id;
+        doneLi.dataset.date = li.dataset.date;
+        doneLi.dataset.priority = li.dataset.priority;
+        doneLi.classList.add("done");
 
-      listDone.appendChild(doneLi);
-    }
-    saveToLocalStorage();
-  });
+        listDone.appendChild(doneLi);
+      }
+      saveToLocalStorage();
+    });
+  }
 }
 
 // Panggil fungsi loadFromLocalStorage saat halaman dimuat
@@ -202,12 +226,15 @@ function addTask() {
     li.dataset.date = taskDate.toISOString();
     li.dataset.priority = taskPriority;
 
-    let span = document.createElement("span");
-    span.textContent = "\u00d7";
-    li.appendChild(span);
+    // Hanya tambahkan span jika belum ada
+    if (!li.querySelector("span")) {
+      let span = document.createElement("span");
+      span.textContent = "\u00d7";
+      li.appendChild(span);
+    }
 
     listTodo.appendChild(li);
-    addClickListener(li);
+    addClickListener(li, "todo");
 
     inputText.value = "";
     saveToLocalStorage();
