@@ -74,21 +74,21 @@ const priority = document.getElementById("selected-priority");
 function saveToLocalStorage() {
   const todos = Array.from(listTodo.children).map((li) => ({
     id: li.dataset.id,
-    text: li.innerHTML,
+    text: li.textContent,
     date: li.dataset.date,
     priority: li.dataset.priority,
   }));
 
   const dones = Array.from(listDone.children).map((li) => ({
     id: li.dataset.id,
-    text: li.innerHTML,
+    text: li.textContent,
     date: li.dataset.date,
     priority: li.dataset.priority,
   }));
 
   const overdues = Array.from(listOverdue.children).map((li) => ({
     id: li.dataset.id,
-    text: li.innerHTML,
+    text: li.textContent,
     date: li.dataset.date,
     priority: li.dataset.priority,
   }));
@@ -106,7 +106,7 @@ function loadFromLocalStorage() {
 
   todos.forEach((task) => {
     let li = document.createElement("li");
-    li.innerHTML = task.text;
+    li.textContent = task.text;
     li.dataset.id = task.id;
     li.dataset.date = task.date;
     li.dataset.priority = task.priority;
@@ -116,7 +116,7 @@ function loadFromLocalStorage() {
 
   dones.forEach((task) => {
     let li = document.createElement("li");
-    li.innerHTML = task.text;
+    li.textContent = task.text;
     li.dataset.id = task.id;
     li.dataset.date = task.date;
     li.dataset.priority = task.priority;
@@ -127,7 +127,7 @@ function loadFromLocalStorage() {
 
   overdues.forEach((task) => {
     let li = document.createElement("li");
-    li.innerHTML = task.text;
+    li.textContent = task.text;
     li.dataset.id = task.id;
     li.dataset.date = task.date;
     li.dataset.priority = task.priority;
@@ -138,7 +138,21 @@ function loadFromLocalStorage() {
 
 // Tambahkan event listener klik ke setiap task
 function addClickListener(li) {
-  li.addEventListener("click", function () {
+  // Event listener untuk span
+  const span = li.querySelector("span");
+  if (span) {
+    span.addEventListener("click", function (event) {
+      event.stopPropagation(); // Hentikan event agar tidak bubble ke parent li
+      li.remove();
+      saveToLocalStorage();
+    });
+  }
+
+  // Event listener untuk li
+  li.addEventListener("click", function (event) {
+    // Jangan lakukan apa-apa jika klik pada span
+    if (event.target.tagName === "SPAN") return;
+
     li.classList.toggle("checked");
 
     const existingItem = Array.from(listDone.children).find(
@@ -149,11 +163,19 @@ function addClickListener(li) {
       listDone.removeChild(existingItem);
     } else {
       let doneLi = document.createElement("li");
-      doneLi.innerHTML = li.innerHTML;
+
+      // Ambil teks konten li tanpa elemen span
+      // Hapus elemen span dari li
+      const textContent = li.cloneNode(true); // Clone li untuk menghindari perubahan langsung
+      const span = textContent.querySelector("span");
+      if (span) span.remove(); // Hapus span dari clone
+
+      doneLi.textContent = `${textContent.textContent.trim()}`;
       doneLi.dataset.id = li.dataset.id;
       doneLi.dataset.date = li.dataset.date;
       doneLi.dataset.priority = li.dataset.priority;
       doneLi.classList.add("done");
+
       listDone.appendChild(doneLi);
     }
     saveToLocalStorage();
@@ -175,15 +197,33 @@ function addTask() {
     const taskDate = new Date(formattedDate);
 
     let li = document.createElement("li");
-    li.innerHTML = `${formattedDate} ${taskText} dengan priority ${taskPriority}`;
+    li.textContent = `${formattedDate} ${taskText} dengan priority ${taskPriority}`;
     li.dataset.id = Date.now();
     li.dataset.date = taskDate.toISOString();
     li.dataset.priority = taskPriority;
-    listTodo.appendChild(li);
 
+    let span = document.createElement("span");
+    span.textContent = "\u00d7";
+    li.appendChild(span);
+
+    listTodo.appendChild(li);
     addClickListener(li);
 
     inputText.value = "";
     saveToLocalStorage();
   }
 }
+
+// Button Delete All
+const deleteAllButton = document.getElementById("delete-all");
+
+deleteAllButton.addEventListener("click", function () {
+  listTodo.innerHTML = "To-Do-List";
+  listDone.innerHTML = "Done";
+  listOverdue.innerHTML = "To-Do-List Overdue";
+
+  // Hapus data dari localStorage
+  localStorage.removeItem("todos");
+  localStorage.removeItem("dones");
+  localStorage.removeItem("overdues");
+});

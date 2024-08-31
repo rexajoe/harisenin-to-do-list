@@ -70,7 +70,7 @@ html {
 #submit {
   border: none;
   outline: none;
-  padding: 3% 4%;
+  padding: 2% 3%;
   background: salmon;
   cursor: pointer;
   border-radius: 50px;
@@ -163,6 +163,8 @@ html {
   cursor: pointer;
   position: relative;
   font-weight: 400;
+  display: flex;
+  flex-direction: row;
 }
 
 #list-todo li::before {
@@ -185,4 +187,30 @@ html {
 
 #list-todo li.checked::before {
   background-image: url(asset/check.png);
+}
+
+li span,
+li span {
+  color: #fff;
+  background: red;
+  padding: 1px 5px;
+  border-radius: 50%;
+  position: absolute;
+  right: 0;
+}
+
+#delete-all {
+  border: none;
+  outline: none;
+  padding: 2% 3%;
+  background: rgb(255, 59, 59);
+  cursor: pointer;
+  border-radius: 50px;
+  font-size: 15px;
+  display: flex;
+  flex-direction: row;
+  width: 50%;
+  text-align: center;
+  justify-content: center;
+  margin-left: 50%;
 }
