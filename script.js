@@ -218,9 +218,9 @@ function addTask() {
 const deleteAllButton = document.getElementById("delete-all");
 
 deleteAllButton.addEventListener("click", function () {
-  listTodo.innerHTML = "To-Do-List";
-  listDone.innerHTML = "Done";
-  listOverdue.innerHTML = "To-Do-List Overdue";
+  listTodo.innerHTML = "To-Do-List :";
+  listDone.innerHTML = "Done :";
+  listOverdue.innerHTML = "To-Do-List Overdue :";
 
   // Hapus data dari localStorage
   localStorage.removeItem("todos");
