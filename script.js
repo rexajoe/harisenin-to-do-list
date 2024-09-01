@@ -101,7 +101,7 @@ function saveToLocalStorage() {
   localStorage.setItem("overdues", JSON.stringify(overdues));
 }
 
-// Muat data dari localStorage
+// Muat data dari localStorage dan pindahkan tugas overdue
 function loadFromLocalStorage() {
   const todos = JSON.parse(localStorage.getItem("todos") || "[]");
   const dones = JSON.parse(localStorage.getItem("dones") || "[]");
@@ -156,6 +156,23 @@ function loadFromLocalStorage() {
 
     listOverdue.appendChild(li);
     addClickListener(li, "overdue");
+  });
+
+  // Pindahkan tugas overdue yang belum di-check
+  moveOverdueTasks();
+}
+
+// Pindahkan tugas overdue
+function moveOverdueTasks() {
+  const now = new Date();
+
+  Array.from(listTodo.children).forEach((li) => {
+    const taskDate = new Date(li.dataset.date);
+    if (taskDate < now && !li.classList.contains("checked")) {
+      listOverdue.appendChild(li);
+      li.classList.remove("checked"); // Pastikan checked tidak ditambahkan
+      addClickListener(li, "overdue");
+    }
   });
 }
 
@@ -248,12 +265,5 @@ deleteAllButton.addEventListener("click", function () {
   listTodo.innerHTML = "To-Do-List :";
   listDone.innerHTML = "Done :";
   listOverdue.innerHTML = "To-Do-List Overdue :";
-
-  // Hapus data dari localStorage
-  localStorage.removeItem("todos");
-  localStorage.removeItem("dones");
-  localStorage.removeItem("overdues");
-
-  // Refresh halaman
-  location.reload();
+  localStorage.clear();
 });

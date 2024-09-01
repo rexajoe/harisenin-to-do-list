@@ -169,7 +169,8 @@
   flex-direction: row;
 }
 
-#list-todo li::before {
+#list-todo li::before,
+#list-overdue li::before {
   content: "";
   position: absolute;
   height: 20px;
@@ -182,12 +183,14 @@
   left: 8px;
 }
 
-#list-todo li.checked {
+#list-todo li.checked,
+#list-overdue li.checked {
   text-decoration: line-through 2px solid black;
   color: #555;
 }
 
-#list-todo li.checked::before {
+#list-todo li.checked::before,
+#list-overdue li.checked::before {
   background-image: url(asset/check.png);
 }
 
